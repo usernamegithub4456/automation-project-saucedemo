@@ -89,8 +89,7 @@ for user in USERS:
                 img_status = "❌ (Image incorrecte!)"
             else:
                 img_status = "✅(Image correcte)"
-                # print('>>>>>>>>>>>>>>>',expected_img_src)
-                # print('>>>>>>>attribute>>>>>>>>',img_elem.get_attribute("src"))
+
 
             btn_status = "✅" if btn_elem.text.lower() == "add to cart" else "❌"
             clickable_status = "✅" if name_elem.is_displayed() and name_elem.is_enabled() else "❌"
