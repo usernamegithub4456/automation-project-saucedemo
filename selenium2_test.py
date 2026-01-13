@@ -35,7 +35,7 @@ options.binary_location = CHROME_PORTABLE_PATH
 options.add_argument("--incognito")
 service = Service(CHROME_DRIVER_PATH)
 driver = webdriver.Chrome(service=service, options=options)
-wait = WebDriverWait(driver, 5)
+wait = WebDriverWait(driver, 0)
 
 # ================= CHARGER JSON =================
 USERS, EXPECTED_PRODUCTS = load_test_data()
@@ -87,6 +87,10 @@ for user in USERS:
             img_status = "✅" if img_elem.is_displayed() else "❌"
             if expected_img_src and expected_img_src not in img_elem.get_attribute("src"):
                 img_status = "❌ (Image incorrecte!)"
+            else:
+                img_status = "✅(Image correcte)"
+                # print('>>>>>>>>>>>>>>>',expected_img_src)
+                # print('>>>>>>>attribute>>>>>>>>',img_elem.get_attribute("src"))
 
             btn_status = "✅" if btn_elem.text.lower() == "add to cart" else "❌"
             clickable_status = "✅" if name_elem.is_displayed() and name_elem.is_enabled() else "❌"
@@ -103,9 +107,9 @@ for user in USERS:
         print(f"❌ Page détail incorrecte pour {username}")
         print(f"Produit affiché : {detail_name}")
 
-    # ================= 4️⃣ Retour au catalogue =================
+    # ================= 4️⃣ Retour à la liste des produits =================
     driver.find_element(By.ID, "back-to-products").click()
-    print ("✅ Retour au catalogue avec succès.")
+    print ("✅ Retour à la liste des produits avec succès.")
 
 
     # ================= 5️⃣ Vérifier total produits =================
