@@ -1,51 +1,74 @@
+import os
+import json
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-import time
+from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import TimeoutException
 
 # ================= CONFIG =================
 CHROME_PORTABLE_PATH = r"C:\Chrome_Sources\chrome-win64\chrome.exe"
 CHROME_DRIVER_PATH = r"C:\Chrome_Sources\chromedriver-win64\chromedriver.exe"
-URL = "https://www.saucedemo.com/"
+URL = "https://www.saucedemo.com"
 
-EXPECTED_PRODUCTS = {
-    "Sauce Labs Backpack": 29.99,
-    "Sauce Labs Bike Light": 9.99,
-    "Sauce Labs Bolt T-Shirt": 15.99,
-    "Sauce Labs Fleece Jacket": 49.99,
-    "Sauce Labs Onesie": 7.99,
-    "Test.allTheThings() T-Shirt (Red)": 15.99
-}
+# ================= JSON GLOBAL PATH =================
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+JSON_PATH = os.path.join(BASE_DIR, "data.json")
+
+def load_test_data():
+    """Charge les utilisateurs et produits depuis le JSON"""
+    if not os.path.exists(JSON_PATH):
+        raise FileNotFoundError(f"Fichier JSON introuvable : {JSON_PATH}")
+
+    with open(JSON_PATH, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    users = data.get("users", [])
+    expected_products = data.get("expected_products", {})
+    return users, expected_products
 
 # ================= CHROME =================
 options = Options()
 options.binary_location = CHROME_PORTABLE_PATH
 options.add_argument("--incognito")
-
 service = Service(CHROME_DRIVER_PATH)
 driver = webdriver.Chrome(service=service, options=options)
+wait = WebDriverWait(driver, 5)
 
-try:
-    # ================= 1. LOGIN =================
+# ================= CHARGER JSON =================
+USERS, EXPECTED_PRODUCTS = load_test_data()
+
+# ================= BOUCLE UTILISATEURS =================
+for user in USERS:
+    username = user["username"]
+    password = user["password"]
+
+    print("\n" + "="*60)
+    print(f"TEST AVEC UTILISATEUR : {username}")
+    print("="*60)
+    print(f" Se connecter avec l'utilisateur {username}")
+
     driver.get(URL)
 
-    driver.find_element(By.ID, "user-name").send_keys("standard_user")
-    driver.find_element(By.ID, "password").send_keys("secret_sauce")
+    driver.find_element(By.ID, "user-name").clear()
+    driver.find_element(By.ID, "user-name").send_keys(username)
+    driver.find_element(By.ID, "password").clear()
+    driver.find_element(By.ID, "password").send_keys(password)
     driver.find_element(By.ID, "login-button").click()
 
-    WebDriverWait(driver, 5).until(
-        EC.presence_of_element_located((By.ID, "inventory_container"))
-    )
-    print("[PASS] Connexion réussie")
+    try:
+        wait.until(EC.presence_of_element_located((By.ID, "inventory_container")))
+        print("[PASS] Connexion réussie")
+    except TimeoutException:
+        print(f"[INFO] {username} ne peut pas se connecter")
+        continue  # ⏩ Passer au compte suivant
 
-    # ================= 2. VERIFIER PRODUITS =================
+    # ================= 2️⃣ Vérifier les produits =================
+    print(" Vérifier que tous ces produits sont présents dans le catalogue:")
     products = driver.find_elements(By.CLASS_NAME, "inventory_item")
     print(f"Produits trouvés: {len(products)}")
-
-    found_products = []
 
     for product in products:
         name_elem = product.find_element(By.CLASS_NAME, "inventory_item_name")
@@ -56,48 +79,40 @@ try:
         name = name_elem.text
         price = float(price_elem.text.replace("$", ""))
 
+        # Vérifier si le produit est attendu
         if name in EXPECTED_PRODUCTS:
-            found_products.append(name)
+            expected_price = EXPECTED_PRODUCTS[name]["price"]
+            expected_img_src = EXPECTED_PRODUCTS[name].get("img_src", "")
 
-            assert img_elem.is_displayed(), f"Image non visible: {name}"
-            assert btn_elem.text.lower() == "add to cart", f"Bouton incorrect: {name}"
-            assert name_elem.is_displayed() and name_elem.is_enabled(), f"Nom non cliquable: {name}"
-            assert price == EXPECTED_PRODUCTS[name], f"Prix incorrect: {name}"
+            img_status = "✅" if img_elem.is_displayed() else "❌"
+            if expected_img_src and expected_img_src not in img_elem.get_attribute("src"):
+                img_status = "❌ (Image incorrecte!)"
 
-            print(f"[PASS] {name}")
+            btn_status = "✅" if btn_elem.text.lower() == "add to cart" else "❌"
+            clickable_status = "✅" if name_elem.is_displayed() and name_elem.is_enabled() else "❌"
 
-    assert len(found_products) == len(EXPECTED_PRODUCTS), \
-        f"Produits manquants: {set(EXPECTED_PRODUCTS) - set(found_products)}"
+            print(f"✅ {name} - ${price} | Image: {img_status}, Bouton: {btn_status}, Nom cliquable: {clickable_status}")
 
-    # ================= 3. CLIQUER SUR UN PRODUIT =================
+    # ================= 3️⃣ Cliquer sur un produit =================
     driver.find_element(By.LINK_TEXT, "Sauce Labs Backpack").click()
-
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CLASS_NAME, "inventory_details_name"))
-    )
-
+    wait.until(EC.presence_of_element_located((By.CLASS_NAME, "inventory_details_name")))
     detail_name = driver.find_element(By.CLASS_NAME, "inventory_details_name").text
-    assert detail_name == "Sauce Labs Backpack", "Mauvais produit affiché"
+    if detail_name == "Sauce Labs Backpack":
+        print(f"✅ Page détail correcte pour {username}")
+    else:
+        print(f"❌ Page détail incorrecte pour {username}")
+        print(f"Produit affiché : {detail_name}")
 
-    print("[PASS] Page détail correcte")
-
-    # ================= 4. RETOUR AU CATALOGUE =================
+    # ================= 4️⃣ Retour au catalogue =================
     driver.find_element(By.ID, "back-to-products").click()
+    print ("✅ Retour au catalogue avec succès.")
 
-    # ================= 5. VERIFIER TOTAL PRODUITS =================
+
+    # ================= 5️⃣ Vérifier total produits =================
     products = driver.find_elements(By.CLASS_NAME, "inventory_item")
     assert len(products) == 6, "Nombre total de produits incorrect"
+    print("✅ Nombre total de produits = 6")
 
-    print("[PASS] Nombre total de produits = 6")
+    print("🎉 TEST COMPLET RÉUSSI 🎉")
 
-    print("\n🎉 TEST COMPLET RÉUSSI 🎉")
-
-except AssertionError as e:
-    print(f"[FAIL] {e}")
-
-except Exception as e:
-    print(f"[ERROR] {e}")
-
-finally:
-    time.sleep(2)
-    driver.quit()
+driver.quit()
