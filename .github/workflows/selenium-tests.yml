@@ -28,26 +28,15 @@ jobs:
           pip install -r requirements.txt
           pip install selenium --upgrade
 
-      # 4️⃣ Créer les dossiers pour Chrome et ChromeDriver
-      - name: Préparer les dossiers
+      # 4️⃣ Installer Chrome et ChromeDriver via Chocolatey
+      - name: Installer Chrome et ChromeDriver
+        shell: powershell
         run: |
-          mkdir C:\Chrome_Sources\chrome-win64
-          mkdir C:\Chrome_Sources\chromedriver-win64
+          Set-ExecutionPolicy Bypass -Scope Process -Force
+          choco install googlechrome -y --ignore-checksums
+          choco install chromedriver -y
 
-      # 5️⃣ Télécharger Chrome et ChromeDriver depuis Drive
-      - name: Télécharger Chrome et ChromeDriver
-        run: |
-          Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1Y-pLJrNN-skjDN-OY7C0a256dhU4T-Sg" -OutFile "C:\Chrome_Sources\chrome-win64\chrome.exe"
-          Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1h9R463OteoDQNYzWrHkXAcXWoDnWv1h8" -OutFile "C:\Chrome_Sources\chromedriver-win64\chromedriver.exe"
-
-          # Vérifier que les fichiers sont bien téléchargés
-          dir C:\Chrome_Sources\chrome-win64
-          dir C:\Chrome_Sources\chromedriver-win64
-
-      # 6️⃣ Lancer le script Selenium
+      # 5️⃣ Exécuter ton script Selenium
       - name: Exécuter Selenium
         run: python selenium2_test.py
 
-
-      - name: 🧪 Exécuter le script Selenium
-        run: python selenium2_test.py
