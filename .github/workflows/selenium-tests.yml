@@ -29,4 +29,4 @@ jobs:
 
       - name: 🧪 Exécuter le script Selenium
         run: |
-          python selnium2_test.py
+          python selenium2_test.py
