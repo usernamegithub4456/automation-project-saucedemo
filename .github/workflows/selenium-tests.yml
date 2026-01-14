@@ -36,14 +36,14 @@ jobs:
           choco install googlechrome -y --ignore-checksums
           choco install chromedriver -y
 
-      # 5️⃣ Préparer ChromeDriver pour le script
+      # 5️⃣ Copier ChromeDriver dans le dossier attendu par ton script
       - name: Préparer ChromeDriver pour le script
         shell: powershell
         run: |
           mkdir C:\Chrome_Sources\chromedriver-win64
           copy "C:\ProgramData\chocolatey\lib\chromedriver\tools\chromedriver.exe" "C:\Chrome_Sources\chromedriver-win64\chromedriver.exe"
 
-      # 6️⃣ Exécuter ton script Selenium
+      # 6️⃣ Exécuter ton script Selenium avec UTF-8 pour les emojis
       - name: Exécuter Selenium
         run: python selenium2_test.py
         env:
