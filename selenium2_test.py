@@ -12,7 +12,7 @@ from selenium.common.exceptions import TimeoutException
 # CHROME_PORTABLE_PATH = r"C:\Chrome_Sources\chrome-win64\chrome.exe"
 # CHROME_DRIVER_PATH = r"C:\Chrome_Sources\chromedriver-win64\chromedriver.exe"
 CHROME_PORTABLE_PATH = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
-CHROME_DRIVER_PATH = r"C:\ProgramData\chocolatey\lib\chromedriver\tools\chromedriver.exe"
+CHROME_DRIVER_PATH = r"C:\ProgramData\chocolatey\lib\chromedriver\tools\chromedriver-win64\chromedriver.exe"
 
 URL = "https://www.saucedemo.com"
 
