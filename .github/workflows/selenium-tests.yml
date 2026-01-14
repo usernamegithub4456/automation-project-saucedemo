@@ -14,7 +14,7 @@ jobs:
       # 1️⃣ Récupérer le code
       - name: Checkout code
         uses: actions/checkout@v3
-
+      
       # 2️⃣ Installer Python
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -36,7 +36,15 @@ jobs:
           choco install googlechrome -y --ignore-checksums
           choco install chromedriver -y
 
-      # 5️⃣ Exécuter ton script Selenium
+      # 5️⃣ Préparer ChromeDriver pour le script
+      - name: Préparer ChromeDriver pour le script
+        shell: powershell
+        run: |
+          mkdir C:\Chrome_Sources\chromedriver-win64
+          copy "C:\ProgramData\chocolatey\lib\chromedriver\tools\chromedriver.exe" "C:\Chrome_Sources\chromedriver-win64\chromedriver.exe"
+
+      # 6️⃣ Exécuter ton script Selenium
       - name: Exécuter Selenium
         run: python selenium2_test.py
-
+        env:
+          PYTHONIOENCODING: utf-8
