@@ -9,8 +9,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
 
 # ================= CONFIG =================
-CHROME_PORTABLE_PATH = r"C:\Chrome_Sources\chrome-win64\chrome.exe"
-CHROME_DRIVER_PATH = r"C:\Chrome_Sources\chromedriver-win64\chromedriver.exe"
+# CHROME_PORTABLE_PATH = r"C:\Chrome_Sources\chrome-win64\chrome.exe"
+# CHROME_DRIVER_PATH = r"C:\Chrome_Sources\chromedriver-win64\chromedriver.exe"
 URL = "https://www.saucedemo.com"
 
 # ================= JSON GLOBAL PATH =================
