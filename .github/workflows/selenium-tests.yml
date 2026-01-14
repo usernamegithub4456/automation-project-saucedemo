@@ -11,32 +11,43 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: 📥 Checkout du code
+      # 1️⃣ Récupérer le code
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: 🐍 Installer Python
+      # 2️⃣ Installer Python
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: 📦 Installer dépendances
+      # 3️⃣ Installer les dépendances Python
+      - name: Installer les dépendances
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install selenium --upgrade
 
-      - name: 📂 Préparer Chrome et ChromeDriver
+      # 4️⃣ Créer les dossiers pour Chrome et ChromeDriver
+      - name: Préparer les dossiers
         run: |
           mkdir C:\Chrome_Sources\chrome-win64
           mkdir C:\Chrome_Sources\chromedriver-win64
 
-          # Télécharger les fichiers depuis Google Drive
-          Invoke-WebRequest "https://drive.google.com/uc?export=download&id=FICHIER_ID_CHROME" -OutFile "C:\Chrome_Sources\chrome-win64\chrome.exe"
-          Invoke-WebRequest "https://drive.google.com/uc?export=download&id=FICHIER_ID_DRIVER" -OutFile "C:\Chrome_Sources\chromedriver-win64\chromedriver.exe"
+      # 5️⃣ Télécharger Chrome et ChromeDriver depuis Drive
+      - name: Télécharger Chrome et ChromeDriver
+        run: |
+          Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1Y-pLJrNN-skjDN-OY7C0a256dhU4T-Sg" -OutFile "C:\Chrome_Sources\chrome-win64\chrome.exe"
+          Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1h9R463OteoDQNYzWrHkXAcXWoDnWv1h8" -OutFile "C:\Chrome_Sources\chromedriver-win64\chromedriver.exe"
 
-          # Vérifier que les fichiers sont bien copiés
+          # Vérifier que les fichiers sont bien téléchargés
           dir C:\Chrome_Sources\chrome-win64
           dir C:\Chrome_Sources\chromedriver-win64
+
+      # 6️⃣ Lancer le script Selenium
+      - name: Exécuter Selenium
+        run: python selenium2_test.py
+
 
       - name: 🧪 Exécuter le script Selenium
         run: python selenium2_test.py
