@@ -1,12 +1,14 @@
-name: Selenium SauceDemo Tests
+name: Selenium Windows Tests
 
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   selenium-test:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest  # Windows runner
 
     steps:
       - name: 📥 Checkout du code
@@ -17,30 +19,15 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: 📦 Installer les dépendances Python
+      - name: 📦 Installer les dépendances
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 🌐 Installer Google Chrome
+      - name: 🔍 Vérifier fichiers
         run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
+          dir
 
-      - name: 🧩 Installer ChromeDriver
-        run: |
-          sudo apt-get install -y chromium-chromedriver
-          sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver || true
-          chromedriver --version
-          google-chrome --version
-
-      - name: 🔍 DEBUG – vérifier les fichiers
-        run: |
-          pwd
-          ls -la
-
-      - name: 🧪 Exécuter le script Selenium (code inchangé)
-        env:
-          PATH: /usr/bin:$PATH
+      - name: 🧪 Exécuter le script Selenium
         run: |
           python selenium2_test.py
