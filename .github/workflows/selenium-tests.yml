@@ -22,11 +22,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 🔍 DEBUG – vérifier les fichiers
-        run: |
-          pwd
-          ls -la
-
       - name: 🧪 Exécuter le script Selenium
         run: |
           python selenium2_test.py
