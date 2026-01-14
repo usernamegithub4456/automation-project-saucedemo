@@ -3,8 +3,6 @@ name: Selenium SauceDemo Tests
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   selenium-test:
@@ -24,6 +22,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 🧪 Exécuter les tests Selenium
+      - name: 🔍 DEBUG – vérifier les fichiers
+        run: |
+          pwd
+          ls -la
+
+      - name: 🧪 Exécuter le script Selenium
         run: |
           python selnium2_test.py
