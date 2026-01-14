@@ -40,10 +40,14 @@ jobs:
       - name: Préparer ChromeDriver pour le script
         shell: powershell
         run: |
-          mkdir C:\Chrome_Sources\chromedriver-win64
-          copy "C:\Chrome_Sources\chromedriver-win64\chromedriver.exe"
-
-      # 6️⃣ Exécuter ton script Selenium avec UTF-8 pour les emojis
+              New-Item -ItemType Directory -Force -Path C:\Chrome_Sources\chromedriver-win64
+          
+              $driver = Get-ChildItem -Recurse "C:\ProgramData\chocolatey\lib\chromedriver\tools" `
+                -Filter chromedriver.exe | Select-Object -First 1
+          
+              Copy-Item $driver.FullName "C:\Chrome_Sources\chromedriver-win64\chromedriver.exe"
+          
+                # 6️⃣ Exécuter ton script Selenium avec UTF-8 pour les emojis
       - name: Exécuter Selenium
         run: python selenium2_test.py
         env:
