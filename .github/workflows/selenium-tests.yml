@@ -52,43 +52,21 @@ jobs:
         run: python selenium2_test.py
         env:
           PYTHONIOENCODING: utf-8
-      - name: Run tests with XML & HTML reports
-        shell: powershell
+     # 6️⃣ Exécuter tests + générer rapports
+      - name: Exécuter Selenium avec rapports
         run: |
-          New-Item -ItemType Directory -Force -Path reports
-      
-          # Exécution de ton script Selenium
-          python selenium2_test.py | Tee-Object reports/output.txt
-      
-          # Rapport HTML
-          $content = Get-Content reports/output.txt | Out-String
-          @"
-          <html>
-            <head>
-              <meta charset="utf-8">
-              <title>Selenium Test Report</title>
-            </head>
-            <body>
-              <h2>Selenium Execution Report</h2>
-              <pre>$content</pre>
-            </body>
-          </html>
-          "@ | Out-File reports/report.html -Encoding utf8
-      
-          # Rapport XML
-          @"
-          <testsuite name="SeleniumTests">
-            <testcase name="selenium2_test">
-              <system-out>
-            $content
-                    </system-out>
-                  </testcase>
-                </testsuite>
-            "@ | Out-File reports/test-results.xml -Encoding utf8
-            - name: Upload test reports
-            uses: actions/upload-artifact@v5
-            with:
-              name: test-reports
-              path: reports/
+          pytest selenium2_test.py ^
+            --html=reports/report.html ^
+            --self-contained-html ^
+            --junitxml=reports/report.xml
+        env:
+          PYTHONIOENCODING: utf-8
+
+      # 7️⃣ Publier rapports HTML & XML
+      - name: Upload rapports
+        uses: actions/upload-artifact@v3
+        with:
+          name: selenium-reports
+          path: reports/
 
       
