@@ -11,24 +11,24 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # 1️⃣ Récupérer le code
+      # 1 Récupérer le code
       - name: Checkout code
         uses: actions/checkout@v3
       
-      # 2️⃣ Installer Python
+      # 2 Installer Python
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      # 3️⃣ Installer les dépendances Python
+      # 3 Installer les dépendances Python
       - name: Installer les dépendances
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install selenium --upgrade
 
-      # 4️⃣ Installer Chrome et ChromeDriver via Chocolatey
+      # 4 Installer Chrome et ChromeDriver via Chocolatey
       - name: Installer Chrome et ChromeDriver
         shell: powershell
         run: |
@@ -36,7 +36,7 @@ jobs:
           choco install googlechrome -y --ignore-checksums
           choco install chromedriver -y
 
-      # 5️⃣ Copier ChromeDriver dans le dossier attendu par ton script
+      # 5 Copier ChromeDriver dans le dossier attendu par ton script
       - name: Préparer ChromeDriver pour le script
         shell: powershell
         run: |
@@ -47,12 +47,12 @@ jobs:
           
               Copy-Item $driver.FullName "C:\Chrome_Sources\chromedriver-win64\chromedriver.exe"
           
-                # 6️⃣ Exécuter ton script Selenium avec UTF-8 pour les emojis
+                # 6 Exécuter ton script Selenium avec UTF-8 pour les emojis
       - name: Exécuter Selenium
         run: python selenium2_test.py
         env:
           PYTHONIOENCODING: utf-8
-     # 6️⃣ Exécuter tests + générer rapports
+     # 7 Exécuter tests + générer rapports
       - name: Exécuter Selenium avec rapports
         shell: powershell
         run: |
@@ -61,7 +61,7 @@ jobs:
 
 
 
-      # 7️⃣ Publier rapports HTML & XML
+      # 8 Publier rapports HTML & XML
       - name: Upload rapports
         uses: actions/upload-artifact@v4
         with:
