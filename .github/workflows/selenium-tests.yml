@@ -52,3 +52,13 @@ jobs:
         run: python selenium2_test.py
         env:
           PYTHONIOENCODING: utf-8
+      - name: Run tests with XML & HTML reports
+        run: |
+          mkdir -p reports
+          pytest tests/ --junitxml=reports/test-results.xml --html=reports/report.html --self-contained-html
+
+      - name: Upload test reports
+        uses: actions/upload-artifact@v5
+        with:
+          name: test-reports
+          path: reports/
