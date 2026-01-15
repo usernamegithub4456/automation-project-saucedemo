@@ -20,7 +20,7 @@ URL = "https://www.saucedemo.com"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 JSON_PATH = os.path.join(BASE_DIR, "data.json")
 
-def load_test_data():
+def test_load_test_data():
     """Charge les utilisateurs et produits depuis le JSON"""
     if not os.path.exists(JSON_PATH):
         raise FileNotFoundError(f"Fichier JSON introuvable : {JSON_PATH}")
@@ -41,7 +41,7 @@ driver = webdriver.Chrome(service=service, options=options)
 wait = WebDriverWait(driver, 0)
 
 # ================= CHARGER JSON =================
-USERS, EXPECTED_PRODUCTS = load_test_data()
+USERS, EXPECTED_PRODUCTS = test_load_test_data()
 
 # ================= BOUCLE UTILISATEURS =================
 for user in USERS:
