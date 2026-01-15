@@ -54,9 +54,11 @@ jobs:
           PYTHONIOENCODING: utf-8
      # 6️⃣ Exécuter tests + générer rapports
       - name: Exécuter Selenium avec rapports
-        run: pytest selenium2_test.py --html=reports/report.html --self-contained-html --junitxml=reports/report.xml
-        env:
-          PYTHONIOENCODING: utf-8
+        shell: powershell
+        run: |
+          mkdir reports
+          pytest selenium2_test.py --html=reports/report.html --self-contained-html --junitxml=reports/report.xml
+
 
 
       # 7️⃣ Publier rapports HTML & XML
